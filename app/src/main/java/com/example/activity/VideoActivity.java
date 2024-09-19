@@ -176,6 +176,16 @@ public class VideoActivity extends AppCompatActivity {
             Log.e("VideoActivity", "FloatingWindowService 为 null，无法调用 updateActivationStatus");
         }
     }
+    // VideoActivity.java
+    public void updateFloatingWindowQuestion(String question) {
+        if (floatingWindowService != null) {
+            floatingWindowService.updateUserQuestion(question);
+            Log.d("VideoActivity", "调用了 FloatingWindowService 的 updateUserQuestion 方法，内容：" + question);
+        } else {
+            Log.e("VideoActivity", "FloatingWindowService 为 null，无法调用 updateUserQuestion");
+        }
+    }
+
 
 
 

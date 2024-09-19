@@ -147,6 +147,9 @@ public class FloatingWindowService extends Service {
     public void updateUserQuestion(String question) {
         if (userQuestionTextView != null) {
             userQuestionTextView.setText(question);
+            Log.d("FloatingWindowService", "更新第二个悬浮窗的内容：" + question);
+        } else {
+            Log.e("FloatingWindowService", "userQuestionTextView 为 null，无法更新内容");
         }
     }
 

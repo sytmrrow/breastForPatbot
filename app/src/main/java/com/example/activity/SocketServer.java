@@ -157,6 +157,16 @@ public class SocketServer {
                                     }
                                 });
                                 break;
+                            case "F":
+                                // 处理 type 为 F 的数据，更新第二个悬浮窗的内容
+                                String content = jsonResponse.getString("content");
+                                uiHandler.post(() -> {
+                                    if (context instanceof VideoActivity) {
+                                        ((VideoActivity) context).updateFloatingWindowQuestion(content);
+                                        Log.d("SocketServer", "已调用 VideoActivity 的 updateFloatingWindowQuestion 方法，内容：" + content);
+                                    }
+                                });
+                                break;
 
                         }
 
