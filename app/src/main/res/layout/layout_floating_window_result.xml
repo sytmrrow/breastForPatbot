@@ -1,15 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="180dp"
     android:layout_height="180dp"
-    android:background="#660000FF"
+    android:background="#6600FF00"
     android:padding="10dp">
 
 <TextView
-android:id="@+id/userQuestionTextView"
+android:id="@+id/serverResultTextView"
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:text="用户提问显示"
+android:text="模型返回内容"
 android:textColor="#FFFFFF"
 android:textSize="20sp"
 android:padding="10dp" />
     </RelativeLayout>
+

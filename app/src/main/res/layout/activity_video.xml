@@ -14,50 +14,30 @@
     app:resize_mode="fill"
     app:use_controller="false" />
 
-    <!-- 右侧垂直布局，占5分之1的宽度 -->
+    <!-- 右侧垂直布局，占1/5的宽度 -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-    android:orientation="vertical"
-    android:padding="16dp">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <!-- 第一个框，是否激活 -->
-    <TextView
-        android:id="@+id/activationStatusTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="是否激活：否"
-        android:textSize="18sp"
-        android:textColor="#FFFFFF"
-        android:background="#FF6200EE"
-        android:padding="16dp"
-        android:gravity="center"
-        android:layout_marginBottom="16dp" />
+        <!-- 占位符，使按钮移动到底部 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-    <!-- 第二个框，用户提问 -->
-    <TextView
-        android:id="@+id/userQuestionTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="用户提问将显示在这里"
-        android:textSize="18sp"
-        android:textColor="#FFFFFF"
-        android:background="#FF03DAC5"
-        android:padding="16dp"
-        android:gravity="center"
-        android:layout_marginBottom="16dp" />
-
-    <!-- 第三个框，播放/暂停按钮 -->
-    <Button
-        android:id="@+id/playPauseButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="暂停"
-        android:textSize="18sp"
-        android:padding="16dp"
-        android:background="#FF018786"
-        android:textColor="#FFFFFF"
-        android:gravity="center" />
+        <!-- 第三个框，播放/暂停按钮 -->
+        <Button
+            android:id="@+id/playPauseButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="暂停"
+            android:textSize="18sp"
+            android:padding="16dp"
+            android:background="#FF018786"
+            android:textColor="#FFFFFF"
+            android:gravity="center" />
 </LinearLayout>
     </LinearLayout>

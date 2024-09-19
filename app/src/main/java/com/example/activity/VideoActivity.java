@@ -176,6 +176,17 @@ public class VideoActivity extends AppCompatActivity {
             Log.e("VideoActivity", "FloatingWindowService 为 null，无法调用 updateActivationStatus");
         }
     }
+    // 新增方法，用于更新第三个悬浮窗的内容
+    public void updateServerResultWindow(String content) {
+        if (floatingWindowService != null) {
+            floatingWindowService.updateServerResult(content);
+            Log.d("VideoActivity", "调用了 FloatingWindowService 的 updateServerResult 方法，内容：" + content);
+        } else {
+            Log.e("VideoActivity", "FloatingWindowService 为 null，无法调用 updateServerResult");
+        }
+    }
+
+
     // VideoActivity.java
     public void updateFloatingWindowQuestion(String question) {
         if (floatingWindowService != null) {
@@ -185,9 +196,16 @@ public class VideoActivity extends AppCompatActivity {
             Log.e("VideoActivity", "FloatingWindowService 为 null，无法调用 updateUserQuestion");
         }
     }
-
-
-
+    // 新增方法，用于更新第三个悬浮窗的内容
+    // 在 VideoActivity.java 中新增此方法
+    public void updateResultWindow(String content) {
+        if (floatingWindowService != null) {
+            floatingWindowService.updateServerResult(content);
+            Log.d("VideoActivity", "调用了 FloatingWindowService 的 updateServerResult 方法，内容：" + content);
+        } else {
+            Log.e("VideoActivity", "FloatingWindowService 为 null，无法调用 updateServerResult");
+        }
+    }
 
     // 新增方法，用于更新 TextView 的内容
     public void updateReceivedData(String data) {

@@ -2,18 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="180dp"
-    android:layout_height="wrap_content"
+    android:layout_height="180dp"
     android:padding="10dp"
-    android:background="#AA000000">
-
-    <!-- 悬浮窗显示的内容，例如 TextView -->
+    android:background="#66FF0000">
     <TextView
         android:id="@+id/activation_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="是否激活"
-        android:textSize="30sp"
+        android:text="状态：未激活"
+        android:textSize="20sp"
         android:textColor="#FFFFFF"
         android:padding="10dp" />
-
 </LinearLayout>

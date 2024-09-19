@@ -2,6 +2,7 @@ package com.example.activity;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -124,22 +125,37 @@ public class SocketServer {
                                         Log.e("SocketServer", "解析 JSON 数据时出错：" + e.getMessage());
                                     }
                                 });
+                                handleResponseType(jsonResponse);
                                 break;
                             case "B":
                                 // 打开会议室预定界面，需要在主线程中执行
                                 uiHandler.post(() -> {
+                                    uiHandler.post(() -> {
+                                        if (context instanceof VideoActivity) {
+                                            try {
+                                                ((VideoActivity) context).pauseVideo(); // 确保在主线程中调用
+                                            } catch (Exception e) {
+                                                Log.e("SocketServer", "暂停视频时出错: " + e.getMessage());
+                                            }
+                                        }
+                                    });
                                     if (context instanceof VideoActivity) {
                                         ((VideoActivity) context).startMeetingActivity();
                                     }
                                 });
+                                handleResponseType(jsonResponse);
                                 break;
                             case "C":
                                 // 处理 C 类事件（智能问答）
                                 handleCTypeResponse(jsonResponse);
+                                handleResponseType(jsonResponse);
                                 break;
                             default:
                                 Log.e("SocketServer", "未知类型：" + type);
                                 break;
+                            case "D":
+                                handleDTypeResponse(jsonResponse);
+                                handleResponseType(jsonResponse);
                             // 添加 type 为 "E" 的处理逻辑
                             case "E":
                                 uiHandler.post(() -> {
@@ -164,7 +180,13 @@ public class SocketServer {
                                     if (context instanceof VideoActivity) {
                                         ((VideoActivity) context).updateFloatingWindowQuestion(content);
                                         Log.d("SocketServer", "已调用 VideoActivity 的 updateFloatingWindowQuestion 方法，内容：" + content);
+                                        // 延迟3秒后恢复悬浮窗的默认状态
+                                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                            ((VideoActivity) context).updateFloatingWindowQuestion("用户提问");
+                                            Log.d("SocketServer", "用户提问悬浮窗内容已恢复为默认状态");
+                                        }, 5000);
                                     }
+
                                 });
                                 break;
 
@@ -226,11 +248,82 @@ public class SocketServer {
                 Log.e("SocketServer", "处理 C 类事件错误: " + e.getMessage());
             }
         }
+        // 处理不同类型的响应，提取 content 并显示在新悬浮窗
+        private void handleResponseType(JSONObject jsonResponse) {
+            try {
+                // 提取 content 数据，假设所有类型的响应都有相似的内容结构
+                if (jsonResponse.has("response")) {
+                    JSONObject response = jsonResponse.getJSONObject("response");
+                    if (response.has("events")) {
+                        JSONArray events = response.getJSONArray("events");
+                        for (int i = 0; i < events.length(); i++) {
+                            JSONObject event = events.getJSONObject(i);
+                            if (event.has("data") && event.getJSONObject("data").has("content")) {
+                                String content = event.getJSONObject("data").getString("content");
+                                // 在主线程上更新悬浮窗
+                                uiHandler.post(() -> {
+                                    if (context instanceof VideoActivity) {
+                                        ((VideoActivity) context).updateResultWindow(content);
+                                        ((VideoActivity) context).updateFloatingWindowStatus("未激活");
+                                        Log.d("SocketServer", "调用了 VideoActivity 的 updateServerResultWindow 方法，内容：" + content);
+                                        // 延迟3秒后恢复默认状态
+                                        new Handler().postDelayed(() -> {
+                                            ((VideoActivity) context).updateResultWindow("模型返回内容");
+                                            Log.d("SocketServer", "恢复悬浮窗到默认状态");
+                                        }, 5000); // 3秒延迟
+                                    }
+                                });
+                                break; // 找到第一个含有内容的事件后停止
+                            }
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                Log.e("SocketServer",  "响应时出错:"  + e.getMessage());
+            }
+        }
+    }
+    private void handleDTypeResponse(JSONObject jsonResponse) {
+        try {
+            JSONObject response = jsonResponse.getJSONObject("response");
+            JSONArray events = response.getJSONArray("events");
 
-        // 处理无法解析的非 JSON 数据
+            for (int i = 0; i < events.length(); i++) {
+                JSONObject event = events.getJSONObject(i);
+                String eventType = event.getString("eventType");
+
+                if ("speech".equals(eventType)) {
+                    String content = event.getJSONObject("data").getString("content");
+                    if (content != null) {
+                        // 尝试在主线程中暂停视频，避免崩溃
+                        uiHandler.post(() -> {
+                            if (context instanceof VideoActivity) {
+                                try {
+                                    ((VideoActivity) context).pauseVideo(); // 确保在主线程中调用
+                                } catch (Exception e) {
+                                    Log.e("SocketServer", "暂停视频时出错: " + e.getMessage());
+                                }
+                            }
+                        });
+                    }
+
+                    // 使用 uiHandler 切换到主线程来进行文本语音播放
+                    uiHandler.post(() -> {
+                        if (context instanceof VideoActivity) {
+                            ((VideoActivity) context).speakText(content);
+                        }
+                    });
+                }
+            }
+        } catch (JSONException e) {
+            Log.e("SocketServer", "处理 D 类事件错误: " + e.getMessage());
+        }
+    }
+
+    // 处理无法解析的非 JSON 数据
         private void handleInvalidData(String data) {
             // 可以在此处理无法解析的数据，例如记录日志或提示
             Log.e("SocketServer", "无法解析的数据: " + data);
         }
     }
-}
+
