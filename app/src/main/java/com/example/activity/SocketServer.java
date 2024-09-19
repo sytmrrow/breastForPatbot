@@ -139,6 +139,20 @@ public class SocketServer {
                             default:
                                 Log.e("SocketServer", "未知类型：" + type);
                                 break;
+                            // 添加 type 为 "e" 的处理逻辑
+                            case "e":
+                                uiHandler.post(() -> {
+                                    // 创建一个 Intent，指向 FloatingWindowService
+                                    Intent intent = new Intent(context, FloatingWindowService.class);
+                                    // 启动服务，调用 updateActivationStatus 方法更新文字
+                                    context.startService(intent);
+                                    // 通过绑定服务的方式调用更新方法
+                                    if (context instanceof VideoActivity) {
+                                        ((VideoActivity) context).updateFloatingWindowStatus("已激活");
+                                    }
+                                });
+                                break;
+
                         }
 
                     } catch (JSONException e) {

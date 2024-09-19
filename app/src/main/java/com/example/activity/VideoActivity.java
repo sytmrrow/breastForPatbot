@@ -27,6 +27,7 @@ public class VideoActivity extends AppCompatActivity {
     private TextView receivedDataTextView;
     private boolean isWebpageOpen = false;  // 用于判断网页是否已经打开
     private String pendingSpeechContent = null;  // 用于保存待播放的 speech 内容
+    private FloatingWindowService floatingWindowService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +127,13 @@ public class VideoActivity extends AppCompatActivity {
     public void speakText(String content) {
         TextToSpeechUtil ttsUtil = TextToSpeechUtil.getInstance(this);
         ttsUtil.speakText(content);
+    }
+
+    // 绑定服务并更新悬浮窗的状态
+    public void updateFloatingWindowStatus(String status) {
+        if (floatingWindowService != null) {
+            floatingWindowService.updateActivationStatus(status);
+        }
     }
 
     // 新增方法，用于更新 TextView 的内容
