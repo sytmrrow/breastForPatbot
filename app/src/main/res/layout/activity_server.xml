@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/server_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="服务器状态"
+        android:textSize="18sp" />
+
+    <!-- 用户输入 location 的 EditText -->
+    <EditText
+        android:id="@+id/location_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请输入 location"
+        android:layout_below="@id/server_status"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:background="@android:drawable/edit_text"
+        android:inputType="text" />
+
+    <!-- 确认按钮 -->
+    <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="确认"
+        android:layout_below="@id/location_input"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentRight="true" />
+
+</LinearLayout>

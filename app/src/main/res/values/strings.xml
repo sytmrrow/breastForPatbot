@@ -1,0 +1,5 @@
+<resources>
+
+    <string name="app_name">人脸识别</string>
+    <string name="floor_plan_image">Floor plan image</string>
+</resources>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+    android:background="@color/blue_sky"
+android:padding="16dp">
+
+<!-- 用户信息模块 -->
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="用户（姓名）：" />
+
+<EditText
+    android:id="@+id/matched_face_text_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="请输入用户名" />
+
+<!-- 会议室预定信息模块 -->
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="日期：" />
+
+<Spinner
+    android:id="@+id/spinner_date"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="时间段：" />
+
+<Spinner
+    android:id="@+id/spinner_time_slot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="会议室：" />
+
+<Spinner
+    android:id="@+id/spinner_meeting_room"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+<Button
+    android:id="@+id/btn_book"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="预定" />
+
+<!-- 表格 -->
+<HorizontalScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+
+        <TableLayout
+            android:id="@+id/table_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*">
+
+            <!-- 表格的标题行 -->
+            <TableRow>
+                <TextView
+                    android:text="日期"
+                    android:padding="8dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="#DDDDDD"/>
+                <TextView
+                    android:text="时间段"
+                    android:padding="8dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="#DDDDDD"/>
+                <TextView
+                    android:text="会议室一"
+                    android:padding="8dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="#DDDDDD"/>
+                <TextView
+                    android:text="会议室二"
+                    android:padding="8dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="#DDDDDD"/>
+                <TextView
+                    android:text="会议室三"
+                    android:padding="8dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="#DDDDDD"/>
+            </TableRow>
+
+            <!-- 这里将动态生成表格内容 -->
+        </TableLayout>
+
+    </ScrollView>
+</HorizontalScrollView>
+</LinearLayout>
