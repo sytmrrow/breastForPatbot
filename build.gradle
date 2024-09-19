@@ -44,10 +44,7 @@ allprojects {
             name "aliyunmaven"
             url "https://maven.aliyun.com/nexus/content/groups/public/"
         }
-        maven{
-            allowInsecureProtocol = true
-            url 'http://repository.padbot.com/repository/padbot-snapshots/'
-        }
+
     }
 
 }

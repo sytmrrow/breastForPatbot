@@ -90,6 +90,7 @@ public class SocketServer {
                     try {
                         JSONObject jsonResponse = new JSONObject(receivedData);
                         String type = jsonResponse.getString("type");
+                        Log.d("SocketServer", "接收到的数据类型: " + type); // 打印接收到的 type 值
                         switch (type) {
                             case "A":
                                 // 处理 A 类型事件，需要在主线程中执行
@@ -139,9 +140,10 @@ public class SocketServer {
                             default:
                                 Log.e("SocketServer", "未知类型：" + type);
                                 break;
-                            // 添加 type 为 "e" 的处理逻辑
-                            case "e":
+                            // 添加 type 为 "E" 的处理逻辑
+                            case "E":
                                 uiHandler.post(() -> {
+                                    Log.d("SocketServer", "处理 type 为 E 的数据，准备更新悬浮窗状态");
                                     // 创建一个 Intent，指向 FloatingWindowService
                                     Intent intent = new Intent(context, FloatingWindowService.class);
                                     // 启动服务，调用 updateActivationStatus 方法更新文字
@@ -149,6 +151,9 @@ public class SocketServer {
                                     // 通过绑定服务的方式调用更新方法
                                     if (context instanceof VideoActivity) {
                                         ((VideoActivity) context).updateFloatingWindowStatus("已激活");
+                                        Log.d("SocketServer", "已调用 VideoActivity 的 updateFloatingWindowStatus 方法");
+                                    }else {
+                                        Log.e("SocketServer", "当前 context 不是 VideoActivity，无法更新悬浮窗状态");
                                     }
                                 });
                                 break;

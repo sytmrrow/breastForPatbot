@@ -4,8 +4,10 @@ package com.example.activity;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -22,22 +24,42 @@ public class FloatingWindowService extends Service {
     private TextView activationStatusTextView;
     private TextView userQuestionTextView;
 
+    // 添加 Binder 对象，用于绑定服务
+    private final IBinder binder = new LocalBinder();
+
+    // LocalBinder 用于返回当前服务的实例
+    public class LocalBinder extends Binder {
+        public FloatingWindowService getService() {
+            return FloatingWindowService.this;
+        }
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        Log.d("FloatingWindowService", "服务已绑定");
+        return binder;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d("FloatingWindowService", "FloatingWindowService 已启动");
 
         // 加载第一个悬浮窗的布局 (用于显示是否激活)
         floatingViewActivation = LayoutInflater.from(this).inflate(R.layout.layout_floating_window_activation, null);
+
+        // 修正 ID 名称，确保与布局文件中的 ID 一致
+        activationStatusTextView = floatingViewActivation.findViewById(R.id.activation_status);
+
+        // 检查是否成功获取到 TextView
+        if (activationStatusTextView != null) {
+            Log.d("FloatingWindowService", "成功获取 activationStatusTextView");
+        } else {
+            Log.e("FloatingWindowService", "获取 activationStatusTextView 失败，视图可能未正确加载");
+        }
+
         // 加载第二个悬浮窗的布局 (用于显示用户提问)
         floatingViewQuestion = LayoutInflater.from(this).inflate(R.layout.layout_floating_window_question, null);
-
-        // 获取 TextView 引用
-        activationStatusTextView = floatingViewActivation.findViewById(R.id.activationStatusTextView);
         userQuestionTextView = floatingViewQuestion.findViewById(R.id.userQuestionTextView);
 
         // 设置第一个悬浮窗的参数 (显示激活状态)
@@ -53,7 +75,11 @@ public class FloatingWindowService extends Service {
         paramsActivation.x = 0;
         paramsActivation.y = 100;
 
-        // 设置第二个悬浮窗的参数 (显示用户提问)
+        // 获取 WindowManager 服务并添加第一个悬浮窗
+        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        windowManager.addView(floatingViewActivation, paramsActivation);
+
+        // 设置第二个悬浮窗的参数并添加
         final WindowManager.LayoutParams paramsQuestion = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -66,15 +92,13 @@ public class FloatingWindowService extends Service {
         paramsQuestion.x = 300;
         paramsQuestion.y = 100;
 
-        // 获取 WindowManager 服务
-        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        windowManager.addView(floatingViewActivation, paramsActivation);  // 添加第一个悬浮窗
-        windowManager.addView(floatingViewQuestion, paramsQuestion);  // 添加第二个悬浮窗
+        windowManager.addView(floatingViewQuestion, paramsQuestion);
 
-        // 悬浮窗拖动逻辑（适用于两个悬浮窗）
+        // 悬浮窗拖动逻辑
         setTouchListener(floatingViewActivation, paramsActivation);
         setTouchListener(floatingViewQuestion, paramsQuestion);
     }
+
 
     private void setTouchListener(View floatingView, WindowManager.LayoutParams params) {
         floatingView.setOnTouchListener(new View.OnTouchListener() {
@@ -111,8 +135,12 @@ public class FloatingWindowService extends Service {
 
     // 实现实时更新悬浮窗内容的方法
     public void updateActivationStatus(String status) {
+        Log.d("FloatingWindowService", "调用 updateActivationStatus 方法，状态: " + status);
         if (activationStatusTextView != null) {
             activationStatusTextView.setText(status);
+            Log.d("FloatingWindowService", "更新悬浮窗状态为：" + status);
+        } else {
+            Log.e("FloatingWindowService", "activationStatusTextView 为 null，无法更新状态");
         }
     }
 

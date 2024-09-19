@@ -1,9 +1,14 @@
 package com.example.activity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +43,9 @@ public class VideoActivity extends AppCompatActivity {
         SpeechUtility.createUtility(this, SpeechConstant.APPID + "=b8585b05");
 
         setupPlayer();
-
+        // 确保 FloatingWindowService 已经启动
+        Intent intent = new Intent(this, FloatingWindowService.class);
+        startService(intent);
 
         // 初始化 Handler，用于在 SocketServer 中与 UI 线程通信
         uiHandler = new Handler(Looper.getMainLooper());
@@ -129,12 +136,48 @@ public class VideoActivity extends AppCompatActivity {
         ttsUtil.speakText(content);
     }
 
-    // 绑定服务并更新悬浮窗的状态
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            // 获取服务实例
+            floatingWindowService = ((FloatingWindowService.LocalBinder) service).getService();
+            Log.d("VideoActivity", "成功绑定 FloatingWindowService");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            floatingWindowService = null;
+            Log.e("VideoActivity", "FloatingWindowService 断开连接");
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, FloatingWindowService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        Log.d("VideoActivity", "尝试绑定 FloatingWindowService");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(serviceConnection);
+        Log.d("VideoActivity", "解除绑定 FloatingWindowService");
+    }
+
+    // 调用更新方法
     public void updateFloatingWindowStatus(String status) {
         if (floatingWindowService != null) {
             floatingWindowService.updateActivationStatus(status);
+            Log.d("VideoActivity", "调用了 FloatingWindowService 的 updateActivationStatus 方法，状态：" + status);
+        } else {
+            Log.e("VideoActivity", "FloatingWindowService 为 null，无法调用 updateActivationStatus");
         }
     }
+
+
 
     // 新增方法，用于更新 TextView 的内容
     public void updateReceivedData(String data) {
