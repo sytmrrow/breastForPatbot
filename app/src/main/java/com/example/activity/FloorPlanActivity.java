@@ -72,7 +72,7 @@ public class FloorPlanActivity extends AppCompatActivity {
         }
         infoTextView.setText(message);
         infoTextView.setGravity(Gravity.CENTER); // 文字居中
-        infoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18); // 调整字体大小
+        infoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26); // 调整字体大小
 
 
         // 设置 TextView 的布局参数，使其居中
@@ -216,7 +216,7 @@ public class FloorPlanActivity extends AppCompatActivity {
                         floorPlanImageView.addMarker(pointX, pointY, "hall");
                     } else if (point.getNLP_name().contains("电梯点")) {
                         floorPlanImageView.addMarker(pointX, pointY, "elevator");
-                    } else if (point.getNLP_name().contains("候梯点")) {
+                    } else if (point.getNLP_name().contains("楼梯")) {
                         floorPlanImageView.addMarker(pointX, pointY, "waiting");
                     }
                 }
@@ -244,7 +244,7 @@ public class FloorPlanActivity extends AppCompatActivity {
                 if (point.getFloor() == floor &&
                         (point.getNLP_name().contains("大厅") ||
                                 point.getNLP_name().contains("电梯点") ||
-                                point.getNLP_name().contains("候梯点"))) {
+                                point.getNLP_name().contains("楼梯"))) {
                     additionalPoints.add(point);
                 }
             }
@@ -317,6 +317,14 @@ public class FloorPlanActivity extends AppCompatActivity {
                     canvas.drawText("电梯", marker.x + 25, marker.y, textPaint);  // 显示文字在标记旁边
                 } else if (marker.type.equals("waiting")) {
                     drawArrowMarker(canvas, marker.x, marker.y);
+
+                    // 添加白色背景矩形
+                    float textWidth = textPaint.measureText("楼梯");
+                    float textHeight = textPaint.getTextSize();
+                    canvas.drawRect(marker.x + 25, marker.y - textHeight, marker.x + 25 + textWidth, marker.y + 10, backgroundPaint);
+
+                    // 添加电梯点文字描述
+                    canvas.drawText("楼梯", marker.x + 25, marker.y, textPaint);  // 显示文字在标记旁边
                 }
             }
         }
