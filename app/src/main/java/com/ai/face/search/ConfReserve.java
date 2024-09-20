@@ -567,6 +567,7 @@ public class ConfReserve extends AppCompatActivity {
         }
     }
 
+
     private void markCellsAsBooked(String date, String beginTime, String endTime, String roomName) {
         String[] timeSlots = generateTimeSlots();
         for (String timeSlot : timeSlots) {
@@ -581,9 +582,34 @@ public class ConfReserve extends AppCompatActivity {
         }
     }
 
+
     private boolean isTimeOverlap(String start1, String end1, String start2, String end2) {
-        return (start1.compareTo(end2) < 0 && start2.compareTo(end1) < 0);
+        // 将时间转换为分钟数用于比较
+        int start1Minutes = convertToMinutes(start1);
+        int end1Minutes = convertToMinutes(end1);
+        int start2Minutes = convertToMinutes(start2);
+        int end2Minutes = convertToMinutes(end2);
+
+        // 处理跨天的情况，例如 22:00 到 00:00
+        if (end1Minutes <= start1Minutes) {
+            end1Minutes += 24 * 60; // 跨天的时间加上24小时
+        }
+        if (end2Minutes <= start2Minutes) {
+            end2Minutes += 24 * 60; // 跨天的时间加上24小时
+        }
+
+        boolean overlap = (start1Minutes < end2Minutes) && (start2Minutes < end1Minutes);
+        Log.d("TimeOverlap", String.format("Checking overlap between [%s-%s] and [%s-%s]: %b", start1, end1, start2, end2, overlap));
+        return overlap;
     }
+    // 辅助方法：将时间转换为分钟数
+    private int convertToMinutes(String time) {
+        String[] parts = time.split(":");
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+        return hours * 60 + minutes;
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
