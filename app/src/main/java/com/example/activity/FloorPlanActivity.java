@@ -105,6 +105,15 @@ public class FloorPlanActivity extends AppCompatActivity {
 
         // 将布局设置为内容视图
         setContentView(layout);
+
+        // 创建一个 Handler 来设置 10 秒后自动跳转
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            // 创建一个 Intent 来跳转到其他 Activity（如 VideoActivity）
+            Intent intent = new Intent(FloorPlanActivity.this, VideoActivity.class);
+            startActivity(intent); // 启动新活动
+            finish(); // 关闭当前活动
+        }, 10000); // 10 秒 (10000毫秒)
+
     }
 
     // 获取楼层图片资源 ID

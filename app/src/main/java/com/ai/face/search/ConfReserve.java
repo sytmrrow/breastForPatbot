@@ -28,6 +28,9 @@ import com.ai.face.bean.MeetingData;
 import com.ai.face.network.ApiService;
 import com.ai.face.utils.VoicePlayer;
 import com.ai.face.network.RetrofitClient;
+import com.example.activity.TextToSpeechUtil;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechUtility;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -62,11 +65,17 @@ public class ConfReserve extends AppCompatActivity {
     @SuppressLint({"SetTextI18n", "MissingInflatedId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 初始化 SpeechUtility
+        SpeechUtility.createUtility(this, SpeechConstant.APPID + "=b8585b05");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conf_reserve);
 
         matchedFaceTextView = findViewById(R.id.matched_face_text_view);
         etUsername = findViewById(R.id.matched_face_text_view); // 确保 ID 正确
+        etUsername.setFocusable(false);
+        etUsername.setFocusableInTouchMode(false);
+        etUsername.setClickable(false);
         spinnerDate = findViewById(R.id.spinner_date);
         spinnerTimeSlot = findViewById(R.id.spinner_time_slot);
         spinnerMeetingRoom = findViewById(R.id.spinner_meeting_room);
@@ -157,10 +166,13 @@ public class ConfReserve extends AppCompatActivity {
             private void showConfirmationDialog(String date, String timeSlot, String meetingRoom, String username) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ConfReserve.this);
                 builder.setTitle("确认预订");
-                builder.setMessage("你确定要预订 " + date + " 的 " + timeSlot + " 时间段，会议室 " + meetingRoom + " 吗？");
+                String message="你确定要预订 " + date + " 的 " + timeSlot + " 时间段，会议室 " + meetingRoom + " 吗？";
+                builder.setMessage(message);
 
                 // 点击确定按钮时执行预定操作
                 builder.setPositiveButton("确定", (dialog, which) -> {
+                    // 停止语音播放
+                    TextToSpeechUtil.getInstance(ConfReserve.this).stopSpeaking();
                     MeetingData data = saveBookingData(date, timeSlot, meetingRoom, username);
                     ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
                     Call<ResponseBody> call = apiService.sendData(data);
@@ -206,11 +218,17 @@ public class ConfReserve extends AppCompatActivity {
                 });
 
                 // 点击取消按钮时关闭对话框
-                builder.setNegativeButton("取消", (dialog, which) -> dialog.dismiss());
+                builder.setNegativeButton("取消", (dialog, which) -> {
+                    // 停止语音播放
+                    TextToSpeechUtil.getInstance(ConfReserve.this).stopSpeaking();
+                    dialog.dismiss();
+                });
 
                 // 显示对话框
                 AlertDialog dialog = builder.create();
                 dialog.show();
+
+                speakText(message);
             }
 
             private void showCustomDialog(String title, String message) {
@@ -223,7 +241,6 @@ public class ConfReserve extends AppCompatActivity {
                 int messageResId = getMessageResIdFromText();
                 VoicePlayer voicePlayer = VoicePlayer.getInstance();
                 voicePlayer.init(ConfReserve.this);
-                voicePlayer.play(messageResId);
 
                 AlertDialog dialog = builder.create();
                 dialog.show();
@@ -567,4 +584,21 @@ public class ConfReserve extends AppCompatActivity {
     private boolean isTimeOverlap(String start1, String end1, String start2, String end2) {
         return (start1.compareTo(end2) < 0 && start2.compareTo(end1) < 0);
     }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // 取消所有的Handler任务
+        handler.removeCallbacksAndMessages(null);
+
+        // 释放 TextToSpeechUtil 资源
+        TextToSpeechUtil ttsUtil = TextToSpeechUtil.getInstance(this);
+        ttsUtil.release();
+
+    }
+    public void speakText(String content) {
+        TextToSpeechUtil ttsUtil = TextToSpeechUtil.getInstance(this);
+        ttsUtil.speakText(content);
+    }
+
 }
