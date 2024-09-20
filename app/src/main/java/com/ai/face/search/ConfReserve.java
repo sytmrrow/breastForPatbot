@@ -440,6 +440,7 @@ public class ConfReserve extends AppCompatActivity {
         tableLayout.invalidate();
     }
 
+    // 修改 createStatusTextView 方法以添加点击事件
     private TextView createStatusTextView(String date, String timeSlot, String meetingRoom, boolean isBooked) {
         TextView textView = createTextView(isBooked ? "已预定" : "未预定", false, 200);
         long currentTime = System.currentTimeMillis();
@@ -451,6 +452,7 @@ public class ConfReserve extends AppCompatActivity {
         String selectedMeetingRoom = spinnerMeetingRoom.getSelectedItem().toString();
         String selectedTime = spinnerTimeSlot.getSelectedItem().toString();
 
+        // 设置格子的颜色
         if (slotEndTime < currentTime) {
             textView.setText("已过期");
             textView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
@@ -464,8 +466,37 @@ public class ConfReserve extends AppCompatActivity {
             textView.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
         }
 
+        // 为格子添加点击事件，更新 Spinner 选中项
+        textView.setOnClickListener(v -> {
+            updateSpinners(date, timeSlot, meetingRoom);
+        });
+
         return textView;
     }
+    // 更新 Spinner 选中内容的方法
+    private void updateSpinners(String date, String timeSlot, String meetingRoom) {
+        // 更新日期 Spinner
+        int datePosition = ((ArrayAdapter<String>) spinnerDate.getAdapter()).getPosition(date);
+        if (datePosition >= 0) {
+            spinnerDate.setSelection(datePosition);
+        }
+
+        // 更新时间段 Spinner
+        int timeSlotPosition = ((ArrayAdapter<String>) spinnerTimeSlot.getAdapter()).getPosition(timeSlot);
+        if (timeSlotPosition >= 0) {
+            spinnerTimeSlot.setSelection(timeSlotPosition);
+        }
+
+        // 更新会议室 Spinner
+        int meetingRoomPosition = ((ArrayAdapter<String>) spinnerMeetingRoom.getAdapter()).getPosition(meetingRoom);
+        if (meetingRoomPosition >= 0) {
+            spinnerMeetingRoom.setSelection(meetingRoomPosition);
+        }
+
+        // 更新表格
+        updateTable();
+    }
+
 
     private void bookMeetingRoom(String date, String timeSlot, String meetingRoom) {
         String key = date + "-" + timeSlot + "-" + meetingRoom;
@@ -517,6 +548,7 @@ public class ConfReserve extends AppCompatActivity {
         return data;
     }
 
+    // 修改 fetchAndUpdateTable 方法以确保表格和 Spinner 状态更新
     private void fetchAndUpdateTable() {
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
         Call<ResponseBody> call = apiService.getReservations();
@@ -542,7 +574,6 @@ public class ConfReserve extends AppCompatActivity {
             }
         });
     }
-
     private void updateBookingStatus(String jsonResponse) {
         try {
             JSONArray jsonArray = new JSONArray(jsonResponse);
